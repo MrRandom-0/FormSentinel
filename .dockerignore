@@ -1,0 +1,12 @@
+.git
+.github
+node_modules
+**/node_modules
+**/dist
+**/.next
+.formsentinel
+.env
+.env.*
+!.env.example
+coverage
+semantic-review

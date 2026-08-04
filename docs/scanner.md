@@ -1,0 +1,5 @@
+# Static scanner
+
+`apps/scanner` exposes `POST /v1/scans`, protected by `SERVICE_TOKEN`, plus operations endpoints. Requests require workspace/form identifiers and a configured Phase 3 repository; otherwise scans return `scanner_persistence_unavailable`. Each redirect hop resolves and validates every DNS answer, then the Node transport connects only to an approved address while preserving the original hostname in Host and TLS SNI/certificate checks. The connected peer must match the approved set. Automatic redirects are disabled, and URL credentials, unsafe ports/hostnames, oversized headers/bodies, excessive redirects, and timeouts are rejected.
+
+Static HTML reports lexical heuristic observations with provenance, confidence, and unsupported coverage; it does not claim runtime facts. JavaScript-rendered pages return `browser_unavailable`; no browser evidence is invented. Tests inject the transport and also drive a real local socket where DNS changes between validation and connection, proving that a mismatched peer is rejected.

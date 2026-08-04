@@ -1,0 +1,42 @@
+{
+  "name": "@formsentinel/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@formsentinel/auth": "workspace:*",
+    "@formsentinel/billing": "workspace:*",
+    "@formsentinel/config": "workspace:*",
+    "@formsentinel/database": "workspace:*",
+    "@formsentinel/entitlements": "workspace:*",
+    "@formsentinel/forms": "workspace:*",
+    "@formsentinel/form-schema": "workspace:*",
+    "@formsentinel/security": "workspace:*",
+    "@formsentinel/storage": "workspace:*",
+    "@formsentinel/submissions": "workspace:*",
+    "@formsentinel/test-console": "workspace:*",
+    "@formsentinel/ui": "workspace:*",
+    "@hookform/resolvers": "^5.0.1",
+    "next": "^15.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.56.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.0",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.10"
+  }
+}

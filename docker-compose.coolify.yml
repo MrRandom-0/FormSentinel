@@ -1,0 +1,208 @@
+# Coolify-compatible Docker Compose for FormSentinel
+# Deploy via Coolify: select "Docker Compose" source, point to docker-compose.coolify.yml
+# Coolify injects environment variables from its UI into each service automatically.
+
+x-common: &common
+  restart: unless-stopped
+  read_only: true
+  tmpfs: [/tmp]
+  security_opt: [no-new-privileges:true]
+  environment: &env
+    NODE_ENV: production
+    FORMSENTINEL_DATA_ADAPTER: postgres
+    FORMSENTINEL_AUTH_ADAPTER: ${FORMSENTINEL_AUTH_ADAPTER:-postgres}
+    DATABASE_URL: postgresql://${POSTGRES_USER:-formsentinel}:${POSTGRES_PASSWORD:?required}@postgres:5432/${POSTGRES_DB:-formsentinel}
+    SESSION_SECRET: ${SESSION_SECRET:?required}
+    SOURCE_HASH_SECRET: ${SOURCE_HASH_SECRET:?required}
+    SERVICE_TOKEN: ${SERVICE_TOKEN:?required}
+    MCP_TOKEN_HASH_SECRET: ${MCP_TOKEN_HASH_SECRET:?required}
+    LOCAL_ENCRYPTION_KEY: ${LOCAL_ENCRYPTION_KEY:?required}
+    API_KEY_HASH_SECRET: ${API_KEY_HASH_SECRET:?required}
+    RELEASE_SHA: ${RELEASE_SHA:-coolify}
+    NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+    NEXT_PUBLIC_INGEST_URL: ${NEXT_PUBLIC_INGEST_URL:-http://localhost:3001}
+    TRUSTED_HOSTS: ${TRUSTED_HOSTS:-localhost:3000}
+    TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-1}
+    INGEST_MAX_BODY_BYTES: ${INGEST_MAX_BODY_BYTES:-12582912}
+    WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-4}
+    WORKER_LEASE_MS: ${WORKER_LEASE_MS:-30000}
+    WORKER_POLL_MS: ${WORKER_POLL_MS:-1000}
+    # Optional integrations (leave blank if unused)
+    TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+    STRIPE_MODE: ${STRIPE_MODE:-}
+    STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+    STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+    STRIPE_PRICE_STARTER: ${STRIPE_PRICE_STARTER:-}
+    STRIPE_PRICE_PRO: ${STRIPE_PRICE_PRO:-}
+    STRIPE_PRICE_AGENCY: ${STRIPE_PRICE_AGENCY:-}
+    BILLING_RETURN_ORIGINS: ${BILLING_RETURN_ORIGINS:-}
+    SENTRY_DSN: ${SENTRY_DSN:-}
+    RESEND_API_KEY: ${RESEND_API_KEY:-}
+    EMAIL_FROM: ${EMAIL_FROM:-}
+    EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-}
+
+services:
+  # --- Database ---
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    networks: [backend]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-formsentinel}
+      POSTGRES_USER: ${POSTGRES_USER:-formsentinel}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-formsentinel} -d ${POSTGRES_DB:-formsentinel}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  # --- Migration (run-once init job) ---
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    command: ["pnpm", "db:migrate"]
+    restart: "no"
+    networks: [backend]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *env
+
+  # --- Web (public, port 3000) ---
+  web:
+    <<: *common
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    networks: [frontend, backend]
+    ports:
+      - "3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    labels:
+      - "coolify.managed=true"
+      - "coolify.port=3000"
+
+  # --- Ingest (public, port 3001) ---
+  ingest:
+    <<: *common
+    build:
+      context: .
+      dockerfile: apps/ingest/Dockerfile
+    networks: [frontend, backend]
+    ports:
+      - "3001:3001"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://127.0.0.1:3001/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    labels:
+      - "coolify.managed=true"
+      - "coolify.port=3001"
+
+  # --- Worker (internal) ---
+  worker:
+    <<: *common
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    networks: [backend]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://127.0.0.1:3002/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  # --- Scanner (internal) ---
+  scanner:
+    <<: *common
+    build:
+      context: .
+      dockerfile: apps/scanner/Dockerfile
+    networks: [backend]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://127.0.0.1:3003/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  # --- MCP (internal) ---
+  mcp:
+    <<: *common
+    build:
+      context: .
+      dockerfile: apps/mcp/Dockerfile
+    networks: [backend]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://127.0.0.1:3004/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+networks:
+  frontend: {}
+  backend:
+    internal: true
+
+volumes:
+  pgdata:

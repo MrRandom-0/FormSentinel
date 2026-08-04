@@ -1,0 +1,34 @@
+{
+  "name": "@formsentinel/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "seed": "tsx src/seed.ts"
+  },
+  "dependencies": {
+    "@formsentinel/auth": "workspace:*",
+    "@formsentinel/config": "workspace:*",
+    "@formsentinel/form-schema": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/pg": "^8.15.2",
+    "drizzle-kit": "^0.31.4",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.10"
+  }
+}

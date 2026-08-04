@@ -1,0 +1,46 @@
+{
+  "name": "formsentinel",
+  "private": true,
+  "packageManager": "pnpm@10.28.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss": "8.5.25",
+      "sharp": "0.35.3"
+    }
+  },
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "lint": "eslint .",
+    "typecheck": "turbo typecheck",
+    "test": "vitest run",
+    "test:phase2": "vitest run apps/ingest/src/index.test.ts apps/worker/src/index.test.ts packages/testing/src/phase2.e2e.test.ts",
+    "test:phase3": "vitest run packages/integration-copilot packages/network-policy packages/scanner packages/schema-drift packages/monitoring packages/reliability packages/security/src/phase3.test.ts packages/analytics/src/phase3.test.ts packages/routing packages/integrations packages/mcp-tools packages/agency packages/reports packages/phase3-store packages/testing/src/phase3.e2e.test.ts",
+    "test:phase3:security": "vitest run packages/network-policy packages/security/src/phase3.test.ts packages/analytics/src/phase3.test.ts packages/routing packages/mcp-tools packages/agency packages/reports",
+    "test:phase4": "vitest run packages/entitlements packages/usage packages/billing packages/abuse packages/privacy packages/observability packages/platform-admin packages/api-keys packages/database/src/phase4-migration.test.ts packages/testing/src/phase4.e2e.test.ts",
+    "test:phase4:security": "vitest run packages/security/src/phase4.test.ts packages/api-keys packages/billing packages/abuse packages/privacy packages/platform-admin packages/testing/src/phase4.e2e.test.ts",
+    "test:a11y": "vitest run packages/testing/src/phase4-a11y.test.ts",
+    "test:load": "vitest run packages/testing/src/phase4-load.test.ts",
+    "audit:dependencies": "pnpm audit --audit-level high",
+    "launch:verify": "pnpm test:phase4 && pnpm test:phase4:security && pnpm test:a11y && pnpm test:load && pnpm db:check",
+    "db:generate": "pnpm --filter @formsentinel/database db:generate",
+    "db:check": "pnpm --filter @formsentinel/database exec drizzle-kit check",
+    "db:migrate": "pnpm --filter @formsentinel/database db:migrate"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@next/eslint-plugin-next": "^15.5.22",
+    "@types/node": "^22.15.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.5.3",
+    "turbo": "^2.10.8",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^4.1.10"
+  }
+}

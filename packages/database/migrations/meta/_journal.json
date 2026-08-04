@@ -1,0 +1,62 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1785611451314,
+      "tag": "0000_phase_one",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1785614551222,
+      "tag": "0001_third_the_twelve",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785615364451,
+      "tag": "0002_peaceful_deathstrike",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1785615541476,
+      "tag": "0003_left_mentor",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1785616444164,
+      "tag": "0004_acoustic_blockbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1785617567159,
+      "tag": "0005_bitter_bulldozer",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1785617612790,
+      "tag": "0006_deep_william_stryker",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1785618514086,
+      "tag": "0007_slim_princess_powerful",
+      "breakpoints": true
+    }
+  ]
+}

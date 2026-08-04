@@ -1,0 +1,5 @@
+# File uploads
+
+Use multipart/form-data. Form policy caps file count, each file, total files, and the complete request. Allowed defaults are PDF, PNG, JPEG, GIF, and plain text. FormSentinel rejects dangerous/double extensions, MIME/signature disagreement, and unsupported bytes before acceptance. The worker detects EICAR, rejects the file, and deletes its private bytes. Browser MIME and Content-Length are never trusted.
+
+Accepted bytes use generated names in private quarantine with SHA-256 metadata. `pending` or `unavailable` scans remain quarantined; infected bytes are rejected/deleted; only `clean` and `released` files are available through the authorized download route. Storage paths are never returned. Local deletion overwrites the file, fsyncs, and unlinks it; physical erasure still depends on filesystem and device behavior. The local mode-0600 filesystem adapter refuses production; production must supply a private object-store implementation with authorized downloads and deletion.

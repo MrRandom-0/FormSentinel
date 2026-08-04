@@ -1,0 +1,42 @@
+{
+  "name": "@formsentinel/testing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "@formsentinel/agency": "workspace:*",
+    "@formsentinel/billing": "workspace:*",
+    "@formsentinel/database": "workspace:*",
+    "@formsentinel/entitlements": "workspace:*",
+    "@formsentinel/ingest": "workspace:*",
+    "@formsentinel/integration-copilot": "workspace:*",
+    "@formsentinel/integrations": "workspace:*",
+    "@formsentinel/mcp-tools": "workspace:*",
+    "@formsentinel/monitoring": "workspace:*",
+    "@formsentinel/platform-admin": "workspace:*",
+    "@formsentinel/queue": "workspace:*",
+    "@formsentinel/reliability": "workspace:*",
+    "@formsentinel/reports": "workspace:*",
+    "@formsentinel/routing": "workspace:*",
+    "@formsentinel/scanner": "workspace:*",
+    "@formsentinel/schema-drift": "workspace:*",
+    "@formsentinel/security": "workspace:*",
+    "@formsentinel/storage": "workspace:*",
+    "@formsentinel/submissions": "workspace:*",
+    "@formsentinel/usage": "workspace:*",
+    "@formsentinel/webhooks": "workspace:*",
+    "@formsentinel/worker": "workspace:*",
+    "@types/node": "^22.15.0",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.10"
+  }
+}

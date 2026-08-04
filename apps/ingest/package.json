@@ -1,0 +1,35 @@
+{
+  "name": "@formsentinel/ingest",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@formsentinel/captcha": "workspace:*",
+    "@formsentinel/config": "workspace:*",
+    "@formsentinel/form-schema": "workspace:*",
+    "@formsentinel/queue": "workspace:*",
+    "@formsentinel/security": "workspace:*",
+    "@formsentinel/spam": "workspace:*",
+    "@formsentinel/storage": "workspace:*",
+    "@formsentinel/submissions": "workspace:*",
+    "@hono/node-server": "^2.0.12",
+    "hono": "^4.12.33"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.10"
+  }
+}

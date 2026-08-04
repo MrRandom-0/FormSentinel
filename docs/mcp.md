@@ -1,0 +1,7 @@
+# MCP
+
+`apps/mcp` serves JSON-RPC at `POST /mcp` and operations at `/health`, `/ready`, and `/version`; the executable starts listening only when `MCP_PORT` or `PORT` is configured. Send `Authorization: Bearer fsmcp_…` and `X-Workspace-Id`. Tokens are displayed once and stored only as keyed hashes with expiry, revocation, exact workspace/form grants, per-minute limits, and audit events. Form-restricted tokens receive only granted forms from collection tools and cannot invoke workspace-wide/create operations without a workspace grant.
+
+Default tools/scopes cover listing forms, public config, expected schema, proposed-field validation, integration code, health, reliability, and repair instructions. Default scopes do not include submissions. There is no real-submission tool. Synthetic `test_submission` requires `submissions:test`, `confirm: true`, and an idempotency key; its result explicitly states external effects are suppressed. `create_form` similarly requires a dedicated mutation scope, confirmation, and idempotency.
+
+The default executable wires the local hashed-token repository in development, but its form repository is explicitly unavailable; form tools therefore return empty/unavailable results rather than demo data. Production MCP startup refuses until a PostgreSQL token/form adapter is supplied. Never use `SERVICE_TOKEN` for MCP; it is only for service-to-service operator endpoints.

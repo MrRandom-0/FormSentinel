@@ -1,0 +1,3 @@
+ALTER TABLE "submissions" ADD COLUMN "previous_status" text;--> statement-breakpoint
+ALTER TABLE "submissions" ADD CONSTRAINT "submissions_duplicate_of_id_submissions_id_fk" FOREIGN KEY ("duplicate_of_id") REFERENCES "public"."submissions"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "submissions_idempotency_scope_idx" ON "submissions" USING btree ("form_id","idempotency_key","created_at") WHERE "submissions"."idempotency_key" IS NOT NULL;

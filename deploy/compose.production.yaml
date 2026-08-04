@@ -1,0 +1,63 @@
+x-service: &service
+  restart: unless-stopped
+  read_only: true
+  tmpfs: [/tmp]
+  security_opt: [no-new-privileges:true]
+  networks: [frontend, backend]
+  deploy:
+    resources:
+      limits: { cpus: "1.0", memory: 512M }
+  environment: &environment
+    NODE_ENV: production
+    FORMSENTINEL_DATA_ADAPTER: postgres
+    DATABASE_URL: ${DATABASE_URL:?injected by secret manager}
+    RELEASE_SHA: ${RELEASE_SHA:?immutable release SHA required}
+services:
+  migrate:
+    image: ${FORMSENTINEL_IMAGE:?image digest required}
+    command: ["pnpm", "db:migrate"]
+    restart: "no"
+    networks: [backend]
+    environment: *environment
+  web:
+    <<: *service
+    image: ${WEB_IMAGE:?image digest required}
+    environment: *environment
+    ports: ["3000:3000"]
+    healthcheck:
+      {
+        test: ["CMD", "wget", "-q", "-O-", "http://127.0.0.1:3000/api/health"],
+        interval: 30s,
+        timeout: 3s,
+        retries: 3,
+      }
+  ingest:
+    <<: *service
+    image: ${INGEST_IMAGE:?image digest required}
+    environment: *environment
+    ports: ["3001:3001"]
+    healthcheck:
+      {
+        test: ["CMD", "wget", "-q", "-O-", "http://127.0.0.1:3001/ready"],
+        interval: 30s,
+        timeout: 3s,
+        retries: 3,
+      }
+  worker:
+    <<: *service
+    image: ${WORKER_IMAGE:?image digest required}
+    environment: *environment
+    networks: [backend]
+  scanner:
+    <<: *service
+    image: ${SCANNER_IMAGE:?image digest required}
+    environment: *environment
+    networks: [backend]
+  mcp:
+    <<: *service
+    image: ${MCP_IMAGE:?image digest required}
+    environment: *environment
+    networks: [backend]
+networks:
+  frontend: {}
+  backend: { internal: true }
