@@ -14,7 +14,7 @@ This guide covers deploying the full FormSentinel stack using [Coolify](https://
 The Coolify deployment runs the following services:
 
 | Service  | Port | Network  | Description                        |
-|----------|------|----------|------------------------------------|
+| -------- | ---- | -------- | ---------------------------------- |
 | web      | 3000 | public   | Next.js dashboard and API          |
 | ingest   | 3001 | public   | Hono-based form submission ingress |
 | worker   | -    | internal | Background job processor           |
@@ -103,14 +103,14 @@ If a health check fails, Coolify will restart the container according to the `re
 
 Default resource limits per service:
 
-| Service  | CPU   | Memory |
-|----------|-------|--------|
-| web      | 1.0   | 1 GB   |
-| ingest   | 1.0   | 512 MB |
-| worker   | 1.0   | 512 MB |
-| scanner  | 0.5   | 256 MB |
-| mcp      | 0.5   | 256 MB |
-| postgres | 1.0   | 512 MB |
+| Service  | CPU | Memory |
+| -------- | --- | ------ |
+| web      | 1.0 | 1 GB   |
+| ingest   | 1.0 | 512 MB |
+| worker   | 1.0 | 512 MB |
+| scanner  | 0.5 | 256 MB |
+| mcp      | 0.5 | 256 MB |
+| postgres | 1.0 | 512 MB |
 
 Adjust these in Coolify's service settings or by modifying `deploy.resources.limits` in the compose file for your workload.
 
@@ -156,12 +156,14 @@ To deploy a new version:
 ### Services fail to start after migration
 
 Check the `migrate` service logs in Coolify. Common causes:
+
 - `DATABASE_URL` is incorrect or PostgreSQL is not ready
 - Migration files are incompatible with the current schema (requires manual intervention)
 
 ### Web returns 503
 
 The web app currently requires the PostgreSQL auth/control-plane adapter to be fully wired for production mode. If you see auth-related errors, verify:
+
 - `FORMSENTINEL_AUTH_ADAPTER=postgres` is set
 - Database migrations completed successfully
 - All required secrets are configured
