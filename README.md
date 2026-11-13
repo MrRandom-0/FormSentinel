@@ -14,6 +14,10 @@ Sign in to the operations dashboard:
 
 ![FormSentinel sign-in page](docs/screenshots/login.png)
 
+The submissions inbox — filter durable records and export the current view as CSV or JSON:
+
+![FormSentinel submissions inbox with bulk export](docs/screenshots/submissions-export.png)
+
 ## Services
 
 | App            | Role                                                              |
