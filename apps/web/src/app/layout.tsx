@@ -20,6 +20,27 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <header className="site-header">
           <div className="container nav">
             <Link className="brand" href="/">
+              <span className="brand-mark" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                  <defs>
+                    <linearGradient id="fs-brand" x1="0" y1="0" x2="24" y2="24">
+                      <stop stopColor="#5253dc" />
+                      <stop offset="1" stopColor="#087f6b" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M12 2.5 4.5 5.25v6.1c0 4.65 3.2 8.15 7.5 9.65 4.3-1.5 7.5-5 7.5-9.65V5.25L12 2.5Z"
+                    fill="url(#fs-brand)"
+                  />
+                  <path
+                    d="m8.75 11.75 2.25 2.25 4.25-4.5"
+                    stroke="#fff"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
               FormSentinel
             </Link>
             <nav className="desktop-nav" aria-label="Primary navigation">
