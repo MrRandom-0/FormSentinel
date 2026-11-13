@@ -4,6 +4,16 @@ Form infrastructure with a security-first design: public submission ingest, spam
 
 > **Status — read this first.** FormSentinel is under active development and is **not production-ready**. Locally, the Phase 2 submission pipeline (ingest → queue → processing → storage) works against PostgreSQL, and the Phase 3/4 package suites (network policy, scanner, schema-drift, entitlements, billing contracts, abuse, privacy, observability) run as tested contracts. Hosted production is deliberately blocked: the PostgreSQL web auth/control-plane and managed storage/KMS/scanner adapters are not implemented, production fallbacks refuse rather than degrade silently, and every local adapter honestly reports `captured_local` instead of claiming provider delivery. See [docs/architecture.md](./docs/architecture.md) for the exact boundaries.
 
+## Screenshots
+
+The web app — tenant operations for the form platform:
+
+![FormSentinel web app landing page](docs/screenshots/landing.png)
+
+Sign in to the operations dashboard:
+
+![FormSentinel sign-in page](docs/screenshots/login.png)
+
 ## Services
 
 | App            | Role                                                              |
