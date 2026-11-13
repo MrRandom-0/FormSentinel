@@ -16,6 +16,7 @@ import {
   selectWorkspace,
 } from "../auth-actions";
 import { resolveAppRoute, resolvePublicRoute, type FormRoute } from "../../lib/route-resolution";
+import { MAX_EXPORT_SUBMISSIONS } from "../../lib/submission-export";
 import { addSubmissionTag, retrySubmission, updateSubmission } from "../submission-actions";
 import { requireSession } from "../../lib/session";
 import { repository, submissionStore } from "../../lib/repository";
@@ -604,6 +605,7 @@ function SubmissionList({
   items,
   nextCursor,
   forms,
+  exportQuery,
 }: {
   items: readonly {
     id: string;
@@ -617,6 +619,8 @@ function SubmissionList({
   }[];
   nextCursor: string | null;
   forms: readonly { id: string; name: string }[];
+  /** Serialized list filters for the bulk export endpoint; omit to hide export. */
+  exportQuery?: string;
 }) {
   return (
     <>
@@ -661,6 +665,26 @@ function SubmissionList({
         </label>
         <button className="button">Filter</button>
       </form>
+      {exportQuery !== undefined ? (
+        <p>
+          <a
+            className="button secondary"
+            href={`/app/submissions/export${exportQuery ? `?${exportQuery}` : ""}`}
+          >
+            Export CSV
+          </a>{" "}
+          <a
+            className="button secondary"
+            href={`/app/submissions/export?format=json${exportQuery ? `&${exportQuery}` : ""}`}
+          >
+            Export JSON
+          </a>{" "}
+          <small>
+            Exports up to {MAX_EXPORT_SUBMISSIONS.toLocaleString("en-US")} submissions matching the
+            current filters.
+          </small>
+        </p>
+      ) : null}
       <div className="grid">
         {items.map((item) => (
           <article className="card" key={item.id}>
@@ -938,6 +962,7 @@ export default async function CatchAllPage({
               items={formSubmissions.items}
               nextCursor={formSubmissions.nextCursor}
               forms={forms}
+              exportQuery={new URLSearchParams({ formId: form.id }).toString()}
             />
           ) : (
             <FormRouteContent
@@ -972,7 +997,19 @@ export default async function CatchAllPage({
       ...(first(query.to) ? { to: new Date(`${first(query.to)}T23:59:59.999Z`) } : {}),
       ...(first(query.cursor) ? { cursor: first(query.cursor)! } : {}),
     });
-    content = <SubmissionList items={page.items} nextCursor={page.nextCursor} forms={forms} />;
+    const exportParams = new URLSearchParams();
+    for (const key of ["formId", "status", "spam", "search", "from", "to"] as const) {
+      const value = first(query[key]);
+      if (value) exportParams.set(key, value);
+    }
+    content = (
+      <SubmissionList
+        items={page.items}
+        nextCursor={page.nextCursor}
+        forms={forms}
+        exportQuery={exportParams.toString()}
+      />
+    );
   } else if (route === "app/settings/security") {
     const sessions = await repository.listSessions(session.userId);
     content = (
